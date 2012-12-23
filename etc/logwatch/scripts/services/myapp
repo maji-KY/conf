@@ -1,0 +1,68 @@
+##########################################################################
+# $Id: myApp,v 1.0 2012/12/23 20:35:04 maji-KY $
+##########################################################################
+#
+#
+########################################################
+
+#use diagnostics;
+#use strict;
+#use warnings;
+
+my %ErrorLog = ();
+my %WarnLog = ();
+my %InfoLog = ();
+my %DebugLog = ();
+my %TraceLog = ();
+my @OtherList = ();
+my $OtherCnt = 0;
+
+while (my $ThisLine = <STDIN>) {
+   chomp($ThisLine);
+   next if ($ThisLine eq '');
+
+   if ( $ThisLine =~ /INFO.*/o ) {
+      $InfoLog{$&}++;
+   } elsif ( $ThisLine =~ /WARN.*/o ) {
+      $WarnLog{$&}++;
+   } elsif ( $ThisLine =~ /ERROR.*/o ) {
+      $ErrorLog{$&}++;
+   } elsif ( $ThisLine =~ /DEBUG.*/o ) {
+      #$DebugLog{$&}++;
+   } elsif ( $ThisLine =~ /TRACE.*/o ) {
+      #$TraceLog{$&}++;
+   } elsif ( $OtherCnt < 200 )  {
+      # Report any unmatched entries...
+      push @OtherList,$ThisLine;
+      $OtherCnt++;
+   }
+}
+
+if (keys %ErrorLog) {
+   print "\nERROR:\n";
+   foreach my $ThisOne (sort { $ErrorLog{$b} cmp $ErrorLog{$a} } keys %ErrorLog) {
+      print "   " . $ThisOne ." : logged " . $ErrorLog{$ThisOne} . " time(s)\n";
+   }
+}
+if (keys %WarnLog) {
+   print "\nWARN:\n";
+   foreach my $ThisOne (sort { $WarnLog{$b} cmp $WarnLog{$a} } keys %WarnLog) {
+      print "   " . $ThisOne ." : logged " . $WarnLog{$ThisOne} . " time(s)\n";
+   }
+}
+if (keys %InfoLog) {
+   print "\nINFO:\n";
+   foreach my $ThisOne (sort { $InfoLog{$b} cmp $InfoLog{$a} } keys %InfoLog) {
+       print "   ". $ThisOne ." : logged " . $InfoLog{$ThisOne} . " time(s)\n";
+   }
+}
+
+if ($#OtherList >= 0) {
+   print "\n**Unmatched Entries**\n";
+   print @OtherList;
+}
+
+exit(0);
+
+# vi: shiftwidth=3 tabstop=3 syntax=perl et
+
